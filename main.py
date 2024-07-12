@@ -1,5 +1,6 @@
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+import json
 
 CLIENT_SECRETS_FILE = "client_secrets.json"
 SCOPES = ["https://www.googleapis.com/auth/youtube.readonly"]
@@ -39,5 +40,11 @@ def get_playlists(youtube):
     return playlists
 
 
+def save_to_json(output_file, data):
+    with open(output_file, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+
+
 youtube = get_authenticated_service(CLIENT_SECRETS_FILE, SCOPES, SERVICE_NAME, VERSION)
 playlists = get_playlists(youtube)
+save_to_json("data/playlists.json", {"playlists": playlists})
