@@ -14,4 +14,30 @@ def get_authenticated_service(client_secrets_file, scopes, service_name, version
     return build(service_name, version, credentials=credentials)
 
 
+def get_playlists(youtube):
+    playlists = []
+
+    next_page_token = None
+    while True:
+        response = (
+            youtube.playlists()
+            .list(
+                part="snippet,contentDetails",
+                mine=True,
+                maxResults=50,
+                pageToken=next_page_token,
+            )
+            .execute()
+        )
+
+        playlists.extend(response.get("items"))
+
+        next_page_token = response.get("nextPageToken")
+        if not next_page_token:
+            break
+
+    return playlists
+
+
 youtube = get_authenticated_service(CLIENT_SECRETS_FILE, SCOPES, SERVICE_NAME, VERSION)
+playlists = get_playlists(youtube)
